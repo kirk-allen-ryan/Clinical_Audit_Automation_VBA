@@ -1,3 +1,7 @@
+'##############################################################################################
+'Create a short UUID for file_cluster Identification
+'##############################################################################################
+
 Function GenerateShortID(length As Integer) As String
     Dim randomNumber As Long
     Dim base64Chars As String
@@ -16,125 +20,45 @@ Function GenerateShortID(length As Integer) As String
     
     GenerateShortID = shortID
 End Function
-
-
-
+'##############################################################################################
 
 Sub ReThreader()
+
+'##############################################################################################
+'Declare variables
+'##############################################################################################
+    
 Dim isFound As Boolean
 Dim currentDate As Date
-Dim elapsedTime As Double
-Dim endTime As Double
-Dim startTime As Double
-Dim cv As Integer
-Dim expt As Integer
-Dim i As Integer
-Dim j As Integer
-Dim k As Integer
-Dim LastRow As Integer
-Dim nextRow As Integer
-Dim nn_count As Integer
-Dim status As Integer
-Dim newColumn As ListColumn
-Dim staffKeyTable As ListObject
-Dim tbl As ListObject
-Dim tbl2 As ListObject
-Dim newRow As listRow
-Dim tblRow As listRow
-Dim olTask As Object
-Dim OutApp As Object
-Dim OutMail As Object
+Dim elapsedTime, endTime, startTime As Double
+Dim cv, expt, i, j, k, LastRow, nextRow, nn_count, status, rowCount, colCount As Integer   
+Dim newColumn, verColumn1, verColumn2 As ListColumn
+Dim staffKeyTable, tbl, tbl2, sourceTable, targetTable, finalTable, verTbl As ListObject
+Dim newRow, tblRow, verRow As listRow
+Dim olTask, OutApp, OutMail As Object
 Dim myDelegate As Outlook.recipient
 Dim pTable As PivotTable
-Dim cell As Range
-Dim f2 As Range
-Dim pendingRange As Range
-Dim rng As Range
-Dim rng2 As Range
+Dim cell, f2, pendingRange, rng, rng2, sourceRange, targetRange, finalRange, transferData, finalCopy, coverSheet As Range
 Dim btn As Shape
-Dim auditBotPath As String
-Dim cellValue2 As String
-Dim columnName As String
-Dim installed As String
-Dim job1 As String
-Dim newname As String
-Dim permPath  As String
-Dim PERM_PATH As String
-Dim recipient As String
-Dim manager As String
-Dim reviewTemplatePath As String
-Dim sourceFilePath As String
-Dim staffKeyPath As String
-Dim targetWorkbookName As String
-Dim template As String
-Dim admin As String
-Dim UserName As String
-Dim windowname As String
-Dim values() As Variant
-Dim worksheetNames() As Variant
-Dim newWorkbook As Workbook
-Dim sourceBook As Workbook
-Dim targetBook As Workbook
-Dim wb As Workbook
-Dim wbStaffKey As Workbook
-Dim wbTemplate As Workbook
-Dim lastWs As Worksheet
-Dim logz As Worksheet
-Dim PRN As Worksheet
-Dim ws As Worksheet
-Dim ws2 As Worksheet
-'#######################################################
-
-Dim ab As Workbook
-Dim abName As String
-Dim abPath As String
-Dim calc As Workbook
-Dim calcName As String
-Dim calcPath As String
-Dim log As Workbook
-Dim logName As String
-Dim logPath As String
-Dim par As Workbook
-Dim parName As String
-Dim parPath As String
-Dim rev As Workbook
-Dim revName As String
-Dim revPath As String
-Dim sk As Workbook
-Dim skName As String
-Dim skPath As String
-Dim siFoc As Worksheet 'sheet in focus
-Dim sourceSheet As Worksheet
-Dim targetSheet As Worksheet
-Dim finalSheet As Worksheet
-Dim sourceTable As ListObject
-Dim targetTable As ListObject
-Dim finalTable As ListObject
-Dim sourceRange As Range
-Dim targetRange As Range
-Dim finalRange As Range
-Dim transferData As Range
-Dim finalCopy As Range
-Dim rowCount As Integer
-Dim colCount As Integer
-Dim coverSheet As Range
-Dim routePath As String
-Dim randomID As String
-Dim accVer As Worksheet
-Dim verTbl As ListObject
-Dim verRow As listRow
-Dim verColumn1 As ListColumn
-Dim verColumn2 As ListColumn
-                
+Dim auditBotPath, cellValue2, columnName, installed, job1, newname, permPath, PERM_PATH, recipient, manager, reviewTemplatePath, abName, abPath, calcName, calcPath, logName, parName As String
+Dim sourceFilePath, staffKeyPath, targetWorkbookName, template, admin, UserName, windowname, logPath, routePath, randomID, revPath, skName, skPath, , revName, parPath As String    
+Dim values(), worksheetNames() As Variant
+Dim newWorkbook, sourceBook, targetBook, wb, wbStaffKey, wbTemplate, calc, sk, log, rev, par, ab As Workbook
+Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, accVer As Worksheet
+    
+'############################################################################################## 
+'Preliminary: verifiy root path for file management
+'Set paths for helper file templates
+'Check for verified admin
+'Set emial addresses for admin and manager roles from the lauch-file dictionary    
+'##############################################################################################    
 
         Dim verver As String: verver = ThisWorkbook.Worksheets("Sheet5").Range("C10").Value
         If verver <> "True" Then
         MsgBox "Verify Root Path before continuing..."
         Exit Sub
         End If
-        
-        
-                
+              
         Application.ScreenUpdating = False
 
         startTime = Timer
@@ -175,13 +99,10 @@ Dim verColumn2 As ListColumn
         
         Application.EnableEvents = False
         
-
         Set siFoc = ab.Worksheets("Sheet5")
 
         cellValue2 = siFoc.Range("C10").Value
-        
-
-         
+                
          Set siFoc = ab.Worksheets("DICT")
          cellValue2 = siFoc.Range("B3").Value
          
@@ -202,7 +123,11 @@ Dim verColumn2 As ListColumn
     '_____If  job1 = TEST, then send to test account!_____
     
     On Error Resume Next
- 
+
+'##############################################################################################                        
+'Open Pain_Audit_Report (raw data) from admin's download folder - abort if not there
+'##############################################################################################   
+                        
     Set par = Workbooks.Open(parPath)
     
     On Error GoTo 0
@@ -215,6 +140,12 @@ Dim verColumn2 As ListColumn
         MsgBox "I found your latest Pain Audit Report - this will only take a few seconds..."
         
     End If
+                                
+'##############################################################################################                        
+'Format raw data file (BO delivers everything as text)
+'check for test-mode (emails sent to admin), etc. 
+'delete Pharmacy report sheets - moved to independent process (module-10)  
+'##############################################################################################                                
     
     For Each ws In par.Worksheets
         
@@ -242,13 +173,20 @@ Dim verColumn2 As ListColumn
     Next k
     
     Erase worksheetNames
+
+'##############################################################################################                        
+'Open StaffKey file
+'Check for raw-data staff names NOT present in the key - send out the key to fix if found
+'Delete raw-data rows linked to exempt staff
+'Check for ALL staff being exempt - abort and log run if no eligible raw-data survives
+'Create coversheet with UUID, attach to Staff Key when sending to manager/admin to log return
+'Create Outlook Task for MANAGER ONLY as needed                                
+'##############################################################################################    
     
     Set sk = Workbooks.Open(skPath)
-    
-    
+        
     Sheets("Staff_Key").Copy After:=par.Sheets(4)
     
-
     sk.Close SaveChanges:=False
 
     Set ws = par.Sheets("Staff_Key")
@@ -256,8 +194,7 @@ Dim verColumn2 As ListColumn
     Dim parSKSource As ListColumn: Set parSKSource = parSK.ListColumns(5)
     
     Dim rowsToDelete As Collection
-
-    
+  
     Set rowsToDelete = New Collection
 
     If job1 <> "TEST" Then
@@ -267,8 +204,7 @@ Dim verColumn2 As ListColumn
         End If
     Next i
     End If
-
-            
+          
         Set siFoc = par.Sheets("PRN")
         
         siFoc.Rows(1).RowHeight = 20
@@ -392,11 +328,15 @@ Dim verColumn2 As ListColumn
                 f2.Value = ""
                 pendingRange.Value = "Live_Data"
             End If
-            
+
+'##############################################################################################
+'Create coversheet from template, populate, attach, and hide - send created objects as needed
+'Coversheet contains UUID, log-in path to recipient client-folders, etc                                                                                                                                
+'##############################################################################################
+                                                                                                                                
                 'fill out your par.coverSheet for staff key here...
                 
                 randomID = GenerateShortID(12)
-
                 
                 recipient = IIf(job1 = "TEST", admin, manager)
                     Set accVer = ab.Worksheets("ACCOUNTS_VER")
@@ -427,8 +367,7 @@ Dim verColumn2 As ListColumn
                 Set verTbl = Nothing
                 Set verColumn1 = Nothing
                 Set verColumn2 = Nothing
-                
-        
+                       
                 Set newWorkbook = Workbooks.Add
                 targetSheet.Copy Before:=newWorkbook.Sheets(1)
                 Application.DisplayAlerts = False
@@ -482,7 +421,12 @@ Dim verColumn2 As ListColumn
                 Exit Sub
 
         End If
-
+'##############################################################################################
+'Format raw-data into tables, arrange, clean, sort, prep for transfer to category templates
+'Calculate infusion end timestamp
+'Transfer raw data to category (pre-combine) sheets - this is where dynamic event IDs are created                                                                                                                                                                                           
+'##############################################################################################
+                                                                                                                                                                                            
         Set siFoc = par.Sheets("SCORES")
         
         siFoc.Rows(1).Delete Shift:=xlUp
@@ -549,28 +493,83 @@ Dim verColumn2 As ListColumn
         Application.Calculation = xlCalculationManual
         
         Set newColumn = targetTable.ListColumns.Add(Position:=17)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(ISBLANK(RC[-5]),"""",IF(NOT(ISERROR(SEARCH(""IV"",RC[-5]))),""A"",""B""))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-5]), """", " & _
+                "IF(NOT(ISERROR(SEARCH(""IV"",RC[-5]))), " & _
+                    """A"", " & _
+                    """B""" & _
+                ")" & _
+            ")"
         newColumn.Name = "TYPE"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
         
         Set newColumn = targetTable.ListColumns.Add(Position:=18)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(ISBLANK(RC[-15]),"""",IF(AND(NOT(EXACT(R[-1]C3,RC3)),RC17=R1C),1, IF( AND( NOT(EXACT(R[-1]C3,RC3)), RC17<>R1C),0,IF( AND(EXACT(R[-1]C3,RC3), RC17<>R1C),R[-1]C, IF( AND(EXACT(R[-1]C3,RC3), RC17=R1C),R[-1]C+1,    """")))))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-15]), """", " & _
+                "IF(AND(" & _
+                    "NOT(EXACT(R[-1]C3,RC3)), " & _
+                    "RC17=R1C" & _
+                "), 1, " & _
+                "IF(AND(" & _
+                    "NOT(EXACT(R[-1]C3,RC3)), " & _
+                    "RC17<>R1C" & _
+                "), 0, " & _
+                "IF(AND(" & _
+                    "EXACT(R[-1]C3,RC3), " & _
+                    "RC17<>R1C" & _
+                "), R[-1]C, " & _
+                "IF(AND(" & _
+                    "EXACT(R[-1]C3,RC3), " & _
+                    "RC17=R1C" & _
+                "), R[-1]C+1, " & _
+                """)))))"
         newColumn.Name = "A"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
         
         Set newColumn = targetTable.ListColumns.Add(Position:=19)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(ISBLANK(RC[-16]),"""", IF(AND(NOT(EXACT(R[-1]C3,RC3)),RC17=R1C),1, IF( AND( NOT(EXACT(R[-1]C3,RC3)), RC17<>R1C),0,IF( AND(EXACT(R[-1]C3,RC3), RC17<>R1C),R[-1]C, IF( AND(EXACT(R[-1]C3,RC3), RC17=R1C),R[-1]C+1,    """")))))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-16]), """", " & _
+                "IF(AND(" & _
+                    "NOT(EXACT(R[-1]C3,RC3)), " & _
+                    "RC17=R1C" & _
+                "), 1, " & _
+                "IF(AND(" & _
+                    "NOT(EXACT(R[-1]C3,RC3)), " & _
+                    "RC17<>R1C" & _
+                "), 0, " & _
+                "IF(AND(" & _
+                    "EXACT(R[-1]C3,RC3), " & _
+                    "RC17<>R1C" & _
+                "), R[-1]C, " & _
+                "IF(AND(" & _
+                    "EXACT(R[-1]C3,RC3), " & _
+                    "RC17=R1C" & _
+                "), R[-1]C+1, " & _
+                """)))))"
         newColumn.Name = "B"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
         
         Set newColumn = targetTable.ListColumns.Add(Position:=20)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(ISBLANK(RC[-17]), """", CONCATENATE(RC[-17]&""-""&IF(RC[-3]=R1C18,CONCATENATE(R1C18&RC[-2]),IF(RC[-3]=R1C19,CONCATENATE(R1C19&RC[-1])))))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-17]),"""", " & _
+            "CONCATENATE(R1C, " & _
+                "IF(RC[-17]=""I"", " & _
+                    "IF(RC[-9]=R1C19, " & _
+                        "CONCATENATE(R1C18,R1C2), " & _
+                        "IF(RC[-9]=R1C20,CONCATENATE(R1C18,R1C2),"""") " & _
+                    "), " & _
+                "IF(RC[-17]=""P"", " & _
+                    "IF(RC[-9]=R1C21, " & _
+                        "CONCATENATE(R1C18,R1C2), " & _
+                        "IF(RC[-9]=R1C22,CONCATENATE(R1C18,R1C2),"""")" & _
+                    ")," & _
+                    """)))"
         newColumn.Name = "ID"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -580,10 +579,14 @@ Dim verColumn2 As ListColumn
         
         Set newColumn = targetTable.ListColumns(11)
         Set rng = newColumn.DataBodyRange
+                                                                                                                                                                                                                                                                                                                    
+'##############################################################################################
+'Log the event counts - need the i for stats later
+'##############################################################################################
+                                                                                                                                                                                                                                                                                                                    
         Dim narcEvents As Long: narcEvents = 0
         Dim nonnarcEvents As Long: nonnarcEvents = 0
-        
-        
+                
         For Each cell In rng
             If cell.Value = "Narc" Then
             narcEvents = narcEvents + 1
@@ -600,8 +603,7 @@ Dim verColumn2 As ListColumn
         
         For i = 1 To k
         targetTable.DataBodyRange.Cells(i, 1).Value = targetTable.DataBodyRange.Cells(i, 20).Value
-        Next i
-               
+        Next i               
         Set sourceSheet = par.Sheets("SCORES")
         Set targetSheet = calc.Sheets("SCORES")
         Set sourceTable = sourceSheet.ListObjects("ass")
@@ -613,13 +615,37 @@ Dim verColumn2 As ListColumn
         colCount = sourceRange.Columns.Count
         
         targetRange.Resize(sourceRange.Rows.Count, sourceRange.Columns.Count).Value = sourceRange.Value
-       
+'##############################################################################################
+'Build out the precombine helper columns - add the completion string the the scores                                                                                                                                                                                                                                                                                                                                
+'Add the assessment status based on the string and score value
+                                                                                                                                                                                                                                                                                                                           
+'##############################################################################################
+                                                                                                                                                                                                                                                                                                                                
         Set newColumn = targetTable.ListColumns.Add(Position:=17)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF( ISBLANK(RC[-14]), """",IF( NOT( ISFORMULA(R[-1]C) ),RC[-11],IF(AND(ISFORMULA(R[-1]C),( ROUND( ( (RC[-11]-R[-1]C) * 1440 ),0) <=5 ),EXACT(RC[-14],R[-1]C[-14])),R[-1]C,RC[-11])))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-14]), """", " & _
+                "IF(NOT(ISFORMULA(R[-1]C)), " & _
+                    "RC[-11], " & _
+                "IF(AND(" & _
+                    "ISFORMULA(R[-1]C), " & _
+                    "ROUND(((RC[-11]-R[-1]C)*1440), 0) <= 5, " & _
+                    "EXACT(RC[-14],R[-1]C[-14])" & _
+                "), " & _
+                    "R[-1]C, " & _
+                    "RC[-11]" & _
+                "))" & _
+            ")"
         newColumn.Name = "OPEN"
         
         Set newColumn = targetTable.ListColumns.Add(Position:=18)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IFERROR( IF( VLOOKUP(RC[-10],ADTA,5,FALSE) = 0, """", VLOOKUP(RC[-10],ADTA,5,)),"""")"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IFERROR(" & _
+                "IF(" & _
+                    "VLOOKUP(RC[-10],ADTA,5,FALSE) = 0, " & _
+                    """""", " & _
+                    "VLOOKUP(RC[-10],ADTA,5,)" & _
+                "), " & _
+            """""")"
         newColumn.Name = "ADTA"
         
         Application.Calculate
@@ -629,33 +655,105 @@ Dim verColumn2 As ListColumn
         targetTable.Sort.SortFields.Add Key:=targetTable.ListColumns(6).Range, SortOn:=xlSortOnValues, Order:=xlAscending
         targetTable.Sort.SortFields.Add Key:=targetTable.ListColumns(18).Range, SortOn:=xlSortOnValues, Order:=xlAscending
         targetTable.Sort.Apply
-        
-      
+              
         Set newColumn = targetTable.ListColumns.Add(Position:=19)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF( NOT( EXACT( CONCATENATE( RC[-16]&RC[-2]), CONCATENATE(R[-1]C[-16]&R[-1]C[-2]))),RC[-1],CONCATENATE(R[-1]C&RC[-1]))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF( " & _
+                "NOT(EXACT( " & _
+                    "CONCATENATE(RC[-16]&RC[-2]), " & _
+                    "CONCATENATE(R[-1]C[-16]&R[-1]C[-2])" & _
+                ")), " & _
+                "RC[-1], " & _
+                "CONCATENATE(R[-1]C&RC[-1])" & _
+            ")"
         newColumn.Name = "STRING"
   
         Set newColumn = targetTable.ListColumns.Add(Position:=20)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IFERROR(IF( OR( RC[-2] = ""w"", RC[-2] = ""x"", RC[-2] = ""y""), VALUE(TRIM(LEFT(RC[-10],2))),""""),""NO SCORE"")"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "RC[-2] = ""w"", " & _
+                    "RC[-2] = ""x"", " & _
+                    "RC[-2] = ""y""" & _
+                "), " & _
+                    "VALUE(TRIM(LEFT(RC[-10],2))), " & _
+                    """"" " & _
+                "), " & _
+            """NO SCORE"")"
         newColumn.Name = "Row-Score"
        
         Set newColumn = targetTable.ListColumns.Add(Position:=21)
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(AND(ISNUMBER(RC[-1]),NOT(EXACT(CONCATENATE(RC[-18]&RC[-4]),CONCATENATE(R[1]C[-18]&R[1]C[-4])))),RC[-1],"""")"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(AND(" & _
+                "ISNUMBER(RC[-1])," & _
+                "NOT(EXACT(" & _
+                    "CONCATENATE(RC[-18]&RC[-4])," & _
+                    "CONCATENATE(R[1]C[-18]&R[1]C[-4])" & _
+                "))" & _
+            "), " & _
+                "RC[-1], " & _
+                """"" " & _
+            ")"
         newColumn.Name = "SCORE"
       
         Set newColumn = targetTable.ListColumns.Add(Position:=22)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF(NOT(ISNUMBER(RC[-1])),"""",IF(AND(ISNUMBER(RC[-1]),RC[-1]=0),""COMPLETE"",IF(AND(ISNUMBER(RC[-1]),RC[-1]>0,OR(ISERROR(SEARCH(""e"",RC[-3])),ISERROR(SEARCH(""f"",RC[-3])),ISERROR(SEARCH(""i"",RC[-3])),ISERROR(SEARCH(""j"",RC[-3])),ISERROR(SEARCH(""k"",RC[-3])),ISERROR(SEARCH(""l"",RC[-3])))), ""PARTIAL"",IF(AND(ISNUMBER(RC[-1]),RC[-1]>0,AND(NOT(ISERROR(SEARCH(""e" & _
-        """,RC[-3]))),NOT(ISERROR(SEARCH(""f"",RC[-3]))),NOT(ISERROR(SEARCH( ""i"",RC[-3]))),NOT(ISERROR(SEARCH( ""j"",RC[-3]))),NOT( ISERROR( SEARCH( ""k"",RC[-3]))),NOT( ISERROR( SEARCH( ""l"",RC[-3]))))),""COMPLETE"",))))" & _
-        ""
+            "=IF(NOT(ISNUMBER(RC[-1])), """", " & _
+                "IF(AND(ISNUMBER(RC[-1]), RC[-1]=0), " & _
+                    """COMPLETE"", " & _
+                "IF(AND(ISNUMBER(RC[-1]), RC[-1]>0, OR(" & _
+                    "ISERROR(SEARCH(""e"",RC[-3])), " & _
+                    "ISERROR(SEARCH(""f"",RC[-3])), " & _
+                    "ISERROR(SEARCH(""i"",RC[-3])), " & _
+                    "ISERROR(SEARCH(""j"",RC[-3])), " & _
+                    "ISERROR(SEARCH(""k"",RC[-3])), " & _
+                    "ISERROR(SEARCH(""l"",RC[-3]))" & _
+                ")), " & _
+                    """PARTIAL"", " & _
+                "IF(AND(ISNUMBER(RC[-1]), RC[-1]>0, AND(" & _
+                    "NOT(ISERROR(SEARCH(""e"",RC[-3]))), " & _
+                    "NOT(ISERROR(SEARCH(""f"",RC[-3]))), " & _
+                    "NOT(ISERROR(SEARCH(""i"",RC[-3]))), " & _
+                    "NOT(ISERROR(SEARCH(""j"",RC[-3]))), " & _
+                    "NOT(ISERROR(SEARCH(""k"",RC[-3]))), " & _
+                    "NOT(ISERROR(SEARCH(""l"",RC[-3]))))" & _
+                "), " & _
+                    """COMPLETE"", " & _
+                    """))" & _
+            ")"
         newColumn.Name = "STATUS"
            
         Set newColumn = targetTable.ListColumns.Add(Position:=23)
         newColumn.Name = "PRN_ID"
 
         Set newColumn = targetTable.ListColumns.Add(Position:=24)
-        newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF(AND(NOT(ISNUMBER(RC[-3])),NOT(EXACT(RC[-21],R[-1]C[-21]))),"""",IF(AND(ISNUMBER(RC[-3]),OR(LEN(R[-1]C)<1,NOT(EXACT(RC[-21],R[-1]C[-21])))),CONCATENATE(RC[-21] & ""-D1""),IF(AND(NOT(ISNUMBER(RC[-3]) ),EXACT(RC[-21],R[-1]C[-21])),R[-1]C,IF(AND( ISNUMBER(RC[-3]),EXACT(RC[-21],R[-1]C[-21])),CONCATENATE(RC[-21]&""-D""&SUM(RIGHT(R[-1]C,LEN(R[-1]C)-SEARCH(""D"",R[-1]C))+1))))))"
+       newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(AND(" & _
+                "NOT(ISNUMBER(RC[-3])), " & _
+                "NOT(EXACT(RC[-21],R[-1]C[-21]))" & _
+            "), """", " & _
+            "IF(AND(" & _
+                "ISNUMBER(RC[-3]), " & _
+                "OR(" & _
+                    "LEN(R[-1]C)<1, " & _
+                    "NOT(EXACT(RC[-21],R[-1]C[-21]))" & _
+                ")" & _
+            "), " & _
+                "CONCATENATE(RC[-21] & ""-D1""), " & _
+            "IF(AND(" & _
+                "NOT(ISNUMBER(RC[-3])), " & _
+                "EXACT(RC[-21],R[-1]C[-21])" & _
+            "), " & _
+                "R[-1]C, " & _
+            "IF(AND(" & _
+                "ISNUMBER(RC[-3]), " & _
+                "EXACT(RC[-21],R[-1]C[-21])" & _
+            "), " & _
+                "CONCATENATE(" & _
+                    "RC[-21]&""-D""&" & _
+                    "SUM(RIGHT(R[-1]C,LEN(R[-1]C)-SEARCH(""D"",R[-1]C))+1)" & _
+                ")" & _
+            "))))"
         newColumn.Name = "SCORE_ID"
         
         Application.Calculate
@@ -690,7 +788,26 @@ Dim verColumn2 As ListColumn
         
         Set newColumn = targetTable.ListColumns.Add(Position:=19)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF( ISBLANK(RC[-16]), """", IF( AND( NOT(EXACT(RC[-16],R[-1]C[-16])),NOT(EXACT(RC[-16],R[1]C[-16]))),""Z"", IF(NOT(EXACT(RC[-16],R[-1]C[-16])),""W"", IF( AND( EXACT(RC[-16],R[-1]C[-16]),EXACT(RC[-16],R[1]C[-16]), NOT(ISERROR(SEARCH(""mL/hr"",RC[-9])))),""X"", IF( NOT(EXACT(RC[-16],R[1]C[-16])),""Y"","""")))))"
+       newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(ISBLANK(RC[-16]), """", " & _
+                "IF(AND(" & _
+                    "NOT(EXACT(RC[-16],R[-1]C[-16])), " & _
+                    "NOT(EXACT(RC[-16],R[1]C[-16]))" & _
+                "), " & _
+                    """Z"", " & _
+                "IF(NOT(EXACT(RC[-16],R[-1]C[-16])), " & _
+                    """W"", " & _
+                "IF(AND(" & _
+                    "EXACT(RC[-16],R[-1]C[-16]), " & _
+                    "EXACT(RC[-16],R[1]C[-16]), " & _
+                    "NOT(ISERROR(SEARCH(""mL/hr"",RC[-9])))" & _
+                "), " & _
+                    """X"", " & _
+                "IF(NOT(EXACT(RC[-16],R[1]C[-16])), " & _
+                    """Y"", " & _
+                    """"" " & _
+                "))" & _
+            "))"
         newColumn.Name = "TYPE"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -698,7 +815,29 @@ Dim verColumn2 As ListColumn
         
         Set newColumn = targetTable.ListColumns.Add(Position:=20)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF( NOT( EXACT( RC[-17],R[-1]C[-17] ) ), """",IF(AND(ISERROR(SEARCH(""X"",RC[-1])),LEN(R[-1]C) < 1),"""",IF(AND(NOT(ISERROR(SEARCH(""X"",RC[-1]))),LEN(R[-1]C) < 1  ),1,IF(AND(RC[-1]<>""X"",ISFORMULA( R[-1]C),LEN(R[-1]C) > 0  ),R[-1]C,IF(AND(NOT(ISERROR(SEARCH(""X"",RC[-1]))),LEN(R[-1]C) > 0  ),R[-1]C+1,"""")))))"
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(NOT(EXACT(RC[-17],R[-1]C[-17])), """", " & _
+                "IF(AND(" & _
+                    "ISERROR(SEARCH(""X"",RC[-1])), " & _
+                    "LEN(R[-1]C) < 1" & _
+                "), """", " & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(SEARCH(""X"",RC[-1]))), " & _
+                    "LEN(R[-1]C) < 1" & _
+                "), 1, " & _
+                "IF(AND(" & _
+                    "RC[-1]<>""X"", " & _
+                    "ISFORMULA(R[-1]C), " & _
+                    "LEN(R[-1]C) > 0" & _
+                "), " & _
+                    "R[-1]C, " & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(SEARCH(""X"",RC[-1]))), " & _
+                    "LEN(R[-1]C) > 0" & _
+                "), " & _
+                    "R[-1]C+1, " & _
+                    """)))" & _
+            "))"
         newColumn.Name = "X"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -706,14 +845,19 @@ Dim verColumn2 As ListColumn
         
         Set newColumn = targetTable.ListColumns.Add(Position:=21)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF(LEN(RC[-2])<1,"""", CONCATENATE(RC[-18]&""-""&RC[-2]& IF(RC[-2]=""X"",RC[-1],"""")))"
+       newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(LEN(RC[-2])<1,""""," & _
+                "CONCATENATE(" & _
+                    "RC[-18]&""-""&RC[-2], " & _
+                    "IF(RC[-2]=""X"", RC[-1], """")" & _
+                ")" & _
+            ")"
         newColumn.Name = "ID"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
         Dim infEvents As Long
         infEvents = Application.WorksheetFunction.CountA(rng)
-
         
         Set newColumn = targetTable.ListColumns(1)
         newColumn.DataBodyRange.FormulaR1C1 = "=RC[20]"
@@ -841,13 +985,11 @@ Dim verColumn2 As ListColumn
         "e/status change charted @ "" & TEXT(RC[-20],""mm/dd/yy hh:mm:ss"") & "" was "" & ROUND((((VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1)),scores,6,FALSE) - RC[-20]) * 1440) - 75),0) & "" minutes late."" & CHAR(10) & ""The "" & VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))" & _
         ",scores,7,FALSE) & "" was due within 75min (60-policy + 15-grace period) but was not charted until "" & TEXT(VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"")& "" ||""& RC[-12]& ""||""),"""")),"""")"
 
-        
         newColumn.Name = "IRF4"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
-        
-        
+               
         Set newColumn = finalTable.ListColumns.Add(Position:=26)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
@@ -857,8 +999,7 @@ Dim verColumn2 As ListColumn
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
-            
-            
+                        
         Set newColumn = finalTable.ListColumns.Add(Position:=27)
         
         newColumn.DataBodyRange.FormulaR1C1 = "=IF( OR( LEN(RC[-11]) < 1, AND(EXACT(RC[-25],R[1]C[-25]),EXACT(RC[-22],R[1]C[-22]),NOT(ISERROR(SEARCH(""D"",R[1]C[-10]))))), """", IF( ((RC[-22] - VLOOKUP(RC[-7],scores,6,FALSE)) * 1440) >45, CONCATENATE( VLOOKUP(RC[-7],scores,7,FALSE) & "" charted @ "" &   TEXT(VLOOKUP(RC[-7],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") &  "" was not charted within 45 min (30-policy + 15" & _
@@ -890,8 +1031,7 @@ Dim verColumn2 As ListColumn
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
-        
-        
+                
         Set newColumn = finalTable.ListColumns.Add(Position:=30)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
@@ -1032,9 +1172,7 @@ Dim verColumn2 As ListColumn
         Set lastWs = wbTemplate.Sheets(wbTemplate.Sheets.Count)
         wsStaffKey.Copy After:=lastWs
         wbStaffKey.Close SaveChanges:=False
-        
-        
-        
+           
         Windows("IP_Review.Template.xlsm").Activate
         Sheets("Staff_Key").Select
         
@@ -1065,14 +1203,12 @@ Dim verColumn2 As ListColumn
         Set targetBook = Nothing
         Set sourceSheet = Nothing
         Set targetSheet = Nothing
-        
-        
+             
         Windows("IP_Review.Template.xlsm").Activate
 
         Set ws = ActiveWorkbook.Worksheets("DATA2")
         ws.Visible = xlSheetVisible
-        
-           
+               
         Windows("IP_Calc.Thread.xlsm").Activate
         
         Range("calcs[[#Headers],[NAME]:[EFF]]").Select
@@ -1123,10 +1259,7 @@ Dim verColumn2 As ListColumn
         parPath = PERM_PATH & "Files\INPATIENT\Reports\RAW\" & randomID & ".xlsm"
         calcPath = PERM_PATH & "Files\INPATIENT\Reports\CALC\" & randomID & ".xlsm"
         revPath = PERM_PATH & "Files\INPATIENT\Reports\REVIEW\" & randomID & ".xlsm"
-
-            
-      
-        
+    
         ActiveWorkbook.SaveAs Filename:= _
             parPath, FileFormat:=xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
         ActiveWorkbook.Close
@@ -1135,8 +1268,6 @@ Dim verColumn2 As ListColumn
         
         Windows("IP_Calc.Thread.xlsm").Activate
         
-        
-        
         ActiveWorkbook.SaveAs Filename:= _
             calcPath, FileFormat:=xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
         ActiveWorkbook.Close
@@ -1144,9 +1275,6 @@ Dim verColumn2 As ListColumn
         Windows("IP_Review.Template.xlsm").Activate
         ActiveWorkbook.Sheets("REVIEW").Activate
         ActiveSheet.Range("C2").Select
-        
-        
-
         
         recipient = IIf(job1 = "TEST", admin, manager)
             Set accVer = ab.Worksheets("ACCOUNTS_VER")
@@ -1162,7 +1290,6 @@ Dim verColumn2 As ListColumn
         Next verRow
         
         Dim cs2 As Worksheet: Set cs2 = ActiveWorkbook.Sheets("COVERSHEET")
-        
         
         Set coverSheet = cs2.Range("coversheet")
         coverSheet.Cells(1, 2).Value = Now
@@ -1254,8 +1381,6 @@ Dim verColumn2 As ListColumn
         wb.Activate
     End If
 
-    
-
     Set lastWs = ActiveWorkbook.Worksheets("IP_HIST")
     Set tbl = lastWs.ListObjects("ip_hx")
     
@@ -1303,7 +1428,6 @@ Dim verColumn2 As ListColumn
         ActiveWorkbook.Save
         ActiveWorkbook.Close
         
-
         MsgBox "Elapsed Time: " & elapsedTime & "   (not too shabby...anyway, links to your raw data, calculations, and review worksheets are in the IP History Summary on the next tab..."
         
         Application.ScreenUpdating = True
