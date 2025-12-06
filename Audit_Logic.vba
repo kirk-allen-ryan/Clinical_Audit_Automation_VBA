@@ -922,7 +922,19 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         
         Set newColumn = finalTable.ListColumns.Add(Position:=19)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF( AND( NOT( EXACT( RC2,R[-1]C2)), ISBLANK( RC[-3])), """", IF(  NOT(ISBLANK( RC[-3])), RC[-3], IF(AND( LEN(R[-1]C)<1, ISBLANK(RC[-3])), """",  IF(AND( LEN(R[-1]C)>1, ISBLANK(RC[-3])), R[-1]C,))))"
+        "=IF(AND(" & _
+            "NOT(EXACT(RC2,R[-1]C2)), " & _
+            "ISBLANK(RC[-3])" & _
+        "), """", " & _
+        "IF(NOT(ISBLANK(RC[-3])), " & _
+            "RC[-3], " & _
+            "IF(AND(LEN(R[-1]C)<1, ISBLANK(RC[-3])), " & _
+                """""", " & _
+            "IF(AND(LEN(R[-1]C)>1, ISBLANK(RC[-3])), " & _
+                "R[-1]C, " & _
+                """)))" & _
+        ")"
+
         newColumn.Name = "CARRY_PRN"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -930,7 +942,19 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         
         Set newColumn = finalTable.ListColumns.Add(Position:=20)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF( AND( NOT( EXACT( RC2,R[-1]C2)), ISBLANK( RC[-3])), """", IF(  NOT(ISBLANK( RC[-3])), RC[-3], IF(AND( LEN(R[-1]C)<1, ISBLANK(RC[-3])), """",    IF(AND( LEN(R[-1]C)>1, ISBLANK(RC[-3])), R[-1]C,))))"
+        "=IF(AND(" & _
+                "NOT(EXACT(RC2,R[-1]C2)), " & _
+                "ISBLANK(RC[-3])" & _
+            "), """", " & _
+            "IF(NOT(ISBLANK(RC[-3])), " & _
+                "RC[-3], " & _
+                "IF(AND(LEN(R[-1]C)<1, ISBLANK(RC[-3])), " & _
+                    """""", " & _
+                "IF(AND(LEN(R[-1]C)>1, ISBLANK(RC[-3])), " & _
+                    "R[-1]C, " & _
+                    """)))" & _
+        ")" 
+
         newColumn.Name = "CARRY_SCORE"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -938,17 +962,62 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
 
         Set newColumn = finalTable.ListColumns.Add(Position:=21)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF( AND( NOT( EXACT( RC2,R[-1]C2)), ISBLANK( RC[-3])), """", IF(  NOT(ISBLANK( RC[-3])), RC[-3], IF(AND( LEN(R[-1]C)<1, ISBLANK(RC[-3])), """",    IF(AND( LEN(R[-1]C)>1, ISBLANK(RC[-3])), R[-1]C,))))"
+        "=IF(AND(" & _
+                "NOT(EXACT(RC2,R[-1]C2)), " & _
+                "ISBLANK(RC[-3])" & _
+            "), """", " & _
+            "IF(NOT(ISBLANK(RC[-3])), " & _
+                "RC[-3], " & _
+                "IF(AND(LEN(R[-1]C)<1, ISBLANK(RC[-3])), " & _
+                    """""", " & _
+                "IF(AND(LEN(R[-1]C)>1, ISBLANK(RC[-3])), " & _
+                    "R[-1]C, " & _
+                    """)))" & _
+        ")"
+
         newColumn.Name = "CARRY_INF"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
         rng.Value = rng.Value
             
         Set newColumn = finalTable.ListColumns.Add(Position:=22)
-        newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-4]) < 1, AND(EXACT(RC[-20],R[1]C[-20]),EXACT(RC[-17],R[1]C[-17]),NOT(ISERROR(SEARCH(""D"",R[1]C[-5]))))), """",IF(AND(NOT(ISERROR(SEARCH(""X"",RC[-4]))), ((RC[-17] - VLOOKUP(RC[-2],scores,6,FALSE)) * 1440) >45 ),CONCATENATE( VLOOKUP(RC[-2],scores,7,FALSE) & "" charted @ "" &TEXT(VLOOKUP(RC[-2],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "" was not chart" & _
-        "ed within 45 min (30-policy + 15-grace period) BEFORE the "" &RC[-11] &"" rate-change to ("" & VLOOKUP( RC[-4], inf,10,FALSE) &"") charted @ "" &TEXT(RC[-17], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-9] & ""||""),IF(AND( NOT(ISERROR(SEARCH(""Y"",RC[-4]))),((RC[-17] - VLOOKUP(RC[-2],scores,6,FALSE)) * 1440) >45 ),CONCATENATE( VLOOKUP(RC[-2],scores,7,FALSE) & "" charted" & _
-        " @ "" & TEXT(VLOOKUP(RC[-2],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") &"" was not charted within 45 min (30-policy + 15-grace period) BEFORE the final "" &RC[-11] & ""  record charted @ "" &TEXT(RC[-17], ""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Check for accurate d/c time.""& "" ||"" & RC[-9] & ""||""),""""))),"""")"
+                newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-4]) < 1, " & _
+                    "AND(" & _
+                        "EXACT(RC[-20],R[1]C[-20])," & _
+                        "EXACT(RC[-17],R[1]C[-17])," & _
+                        "NOT(ISERROR(SEARCH(""D"",R[1]C[-5])))" & _
+                    ")" & _
+                "), " & _
+                    """""", " & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(SEARCH(""X"",RC[-4]))), " & _
+                    "((RC[-17] - VLOOKUP(RC[-2],scores,6,FALSE)) * 1440) > 45 " & _
+                "), " & _
+                    "CONCATENATE(" & _
+                        "VLOOKUP(RC[-2],scores,7,FALSE) & "" charted @ "" & " & _
+                        "TEXT(VLOOKUP(RC[-2],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "" was not charted within 45 min (30-policy + 15-grace period) BEFORE the "" & " & _
+                        "RC[-11] &"" rate-change to ("" & VLOOKUP(RC[-4],inf,10,FALSE) & "") charted @ "" & " & _
+                        "TEXT(RC[-17], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-9] & ""||""" & _
+                    "), " & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(SEARCH(""Y"",RC[-4]))), " & _
+                    "((RC[-17] - VLOOKUP(RC[-2],scores,6,FALSE)) * 1440) > 45 " & _
+                "), " & _
+                    "CONCATENATE(" & _
+                        "VLOOKUP(RC[-2],scores,7,FALSE) & "" charted @ "" & " & _
+                        "TEXT(VLOOKUP(RC[-2],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "" was not charted within 45 min (30-policy + 15-grace period) BEFORE the final "" & " & _
+                        "RC[-11] & "" record charted @ "" & TEXT(RC[-17], ""mm/dd/yy hh:mm:ss"") & " & _
+                        "CHAR(10) & ""Check for accurate d/c time."" & "" ||"" & RC[-9] & ""||""" & _
+                    "), " & _
+                    """"" " & _
+                ")" & _
+            "))), " & _
+            """"" " & _
+            ")"
+
         newColumn.Name = "IRF1"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -957,9 +1026,29 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         
         Set newColumn = finalTable.ListColumns.Add(Position:=23)
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IF(OR(LEN(RC[-5]) < 1,LEN(RC[-3]) > 1 ), """",IF(AND(NOT(ISERROR(SEARCH(""X"",RC[-5]))), LEN(RC[-3]) < 1     ),CONCATENATE( ""No pain-score observed prior to the "" &    RC[-15] &    "" rate-change to ("" & RC[-14] &    "") charted @ "" &    TEXT(RC[-18], ""mm/dd/yy hh:mm:ss"")& "" ||"" & RC[-10] & ""||""),IF(AND(NOT(ISERROR(SEARCH(""Y"",RC[-5]))), LEN(RC[-3]) < 1)" & _
-        ",CONCATENATE( ""No pain-score observed prior to the final"" &    RC[-15] &    ""  record charted @ "" & TEXT(RC[-18], ""mm/dd/yy hh:mm:ss"")& "" ||"" & RC[-10] & ""||""),"""")))"
-        
+            "=IF(OR(" & _
+                "LEN(RC[-5]) < 1, " & _
+                "LEN(RC[-3]) > 1 " & _
+            "), """", " & _
+            "IF(AND(" & _
+                "NOT(ISERROR(SEARCH(""X"",RC[-5]))), " & _
+                "LEN(RC[-3]) < 1" & _
+            "), " & _
+                "CONCATENATE(" & _
+                    """No pain-score observed prior to the "" & " & _
+                    "RC[-15] & "" rate-change to ("" & RC[-14] & "") charted @ "" & " & _
+                    "TEXT(RC[-18], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-10] & ""||""" & _
+                "), " & _
+            "IF(AND(" & _
+                "NOT(ISERROR(SEARCH(""Y"",RC[-5]))), " & _
+                "LEN(RC[-3]) < 1" & _
+            "), " & _
+                "CONCATENATE(" & _
+                    """No pain-score observed prior to the final "" & " & _
+                    "RC[-15] & "" record charted @ "" & " & _
+                    "TEXT(RC[-18], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-10] & ""||""" & _
+                "), " & _
+                """)))"        
         newColumn.Name = "IRF2"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -967,12 +1056,29 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         
         Set newColumn = finalTable.ListColumns.Add(Position:=24)
         
-        newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR(LEN(RC[-6]) < 1, LEN(RC[-4]) < 1,VLOOKUP(RC[-4],scores,21,FALSE)<>""PARTIAL"",AND(ISERROR(SEARCH(""X"",RC[-6])),ISERROR(SEARCH(""Y"",RC[-6])))),"""",CONCATENATE( ""The previous pain assessment ("" & TEXT( VLOOKUP(RC[-4],scores,6,FALSE), ""mm/dd/yy hh:mm:ss"" )& "") observed before ""& RC[-13]& "" rate/status change charted @ "" & TEXT(RC[-19],""mm/d" & _
-        "d/yy hh:mm:ss"")& "" was incomplete."")& CHAR(10) & "" ||""& RC[-11] & ""||""& CHAR(10)& IF(ISERROR(SEARCH(CodeKey!R2C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R2C3&"" ' is missing"" & CHAR(10),"""")& IF(ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R3C3 &"" ' is missing"" & CHAR(10),"""")& IF(ISERROR(SEARCH(CodeKey!R4C5,VLOOKU" & _
-        "P(RC[-4],scores,18,FALSE))),""'""&CodeKey!R4C3&"" ' is missing""&CHAR(10),"""") & IF(ISERROR(SEARCH(CodeKey!R5C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R5C3&"" ' is missing""&CHAR(10),"""")& IF( ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R6C3&"" ' is missing""&CHAR(10),"""") & IF( ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-4]" & _
-        ",scores,18,FALSE))), ""'""&CodeKey!R7C3&"" ' is missing""&CHAR(10),"""")& IF( ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R8C3&"" ' is missing""&CHAR(10),"""")),"""")"
-      
+         newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-6]) < 1, " & _
+                    "LEN(RC[-4]) < 1," & _
+                    "VLOOKUP(RC[-4],scores,21,FALSE)<>""PARTIAL""," & _
+                    "AND(ISERROR(SEARCH(""X"",RC[-6])),ISERROR(SEARCH(""Y"",RC[-6])))" & _
+                "), """"," & _
+                "CONCATENATE(" & _
+                    """The previous pain assessment ("" & " & _
+                    "TEXT(VLOOKUP(RC[-4],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "") observed before "" & RC[-13] & "" rate/status change charted @ "" & " & _
+                    "TEXT(RC[-19],""mm/dd/yy hh:mm:ss"") & "" was incomplete."") & CHAR(10) & "" ||"" & RC[-11] & ""||"" & CHAR(10), " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R2C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R2C3&"" ' is missing"" & CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R3C3 &"" ' is missing"" & CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R4C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R4C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R5C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R5C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R6C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R7C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R8C3&"" ' is missing""&CHAR(10),"""")" & _
+                "), " & _
+                """"" " & _
+            ")"
+
         newColumn.Name = "IRF3"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -981,10 +1087,32 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=25)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF(  OR( LEN(RC[-7]) < 1, AND( ISERROR(SEARCH(""X"",RC[-7])), ISERROR(SEARCH(""Y"",RC[-7])), ISERROR(SEARCH(""Z"",RC[-7])) )  ), """", IF( ((VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1)),scores,6,FALSE) - RC[-20]) * 1440) > 75, CONCATENATE(  ""The follow-up pain assessment charted after "" & RC[-14] & "" rat" & _
-        "e/status change charted @ "" & TEXT(RC[-20],""mm/dd/yy hh:mm:ss"") & "" was "" & ROUND((((VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1)),scores,6,FALSE) - RC[-20]) * 1440) - 75),0) & "" minutes late."" & CHAR(10) & ""The "" & VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))" & _
-        ",scores,7,FALSE) & "" was due within 75min (60-policy + 15-grace period) but was not charted until "" & TEXT(VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM( RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"")& "" ||""& RC[-12]& ""||""),"""")),"""")"
-
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-7]) < 1, " & _
+                    "AND(" & _
+                        "ISERROR(SEARCH(""X"",RC[-7])), " & _
+                        "ISERROR(SEARCH(""Y"",RC[-7])), " & _
+                        "ISERROR(SEARCH(""Z"",RC[-7]))" & _
+                    ")" & _
+                "), """"," & _
+                "IF(((VLOOKUP(" & _
+                    "CONCATENATE(RC[-23]&""-D""& SUM(RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))," & _
+                    "scores,6,FALSE) - RC[-20]) * 1440) > 75, " & _
+                "CONCATENATE(" & _
+                    """The follow-up pain assessment charted after "" & RC[-14] & "" rate/status change charted @ "" & " & _
+                    "TEXT(RC[-20],""mm/dd/yy hh:mm:ss"") & "" was "" & " & _
+                    "ROUND((((VLOOKUP(" & _
+                        "CONCATENATE(RC[-23]&""-D""& SUM(RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))," & _
+                        "scores,6,FALSE) - RC[-20]) * 1440) - 75),0) & "" minutes late."" & CHAR(10) & ""The "" & " & _
+                    "VLOOKUP(" & _
+                        "CONCATENATE(RC[-23]&""-D""& SUM(RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))," & _
+                        "scores,7,FALSE) & "" was due within 75min (60-policy + 15-grace period) but was not charted until "" & " & _
+                    "TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-23]&""-D""& SUM(RIGHT(RC[-5], LEN(RC[-5]) - SEARCH(""D"",RC[-5]))+1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" ||""& RC[-12]& ""||""" & _
+                "), """")" & _
+            "))"
         newColumn.Name = "IRF4"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -993,8 +1121,32 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=26)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-8]) < 1, MONTH(RC[-23]) > MONTH(RC[-21]), AND( ISERROR(SEARCH(""X"",RC[-8])), ISERROR(SEARCH(""Y"",RC[-8])),  ISERROR(SEARCH(""Z"",RC[-8]))  ) ), """", IF( ISERROR(VLOOKUP(CONCATENATE(RC[-24]&""-D""& SUM( RIGHT(RC[-6], LEN(RC[-6]) -SEARCH(""D"",RC[-6]))+1)),scores,6,FALSE)), CONCATENATE( ""No follow-up pain assessment observed after "" & RC" & _
-        "[-15] & IF(  NOT(ISERROR(SEARCH(""X"", RC[-8]))),  "" rate change charted @ "",  "" final infusion record charted @ "" ) & TEXT(RC[-21],""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Patient discharged @ "" & TEXT(RC[-23], ""mm/dd/yy hh:mm:ss"") & CHAR(10) & "" ||"" & RC[-13] & ""||"" ),"""")),"""")"
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-8]) < 1, " & _
+                    "MONTH(RC[-23]) > MONTH(RC[-21]), " & _
+                    "AND(" & _
+                        "ISERROR(SEARCH(""X"",RC[-8])), " & _
+                        "ISERROR(SEARCH(""Y"",RC[-8])), " & _
+                        "ISERROR(SEARCH(""Z"",RC[-8]))" & _
+                    ")" & _
+                "), """", " & _
+                "IF(ISERROR(VLOOKUP(" & _
+                    "CONCATENATE(RC[-24]&""-D""& SUM(RIGHT(RC[-6], LEN(RC[-6]) -SEARCH(""D"",RC[-6]))+1))," & _
+                    "scores,6,FALSE)" & _
+                "), " & _
+                    "CONCATENATE(" & _
+                        """No follow-up pain assessment observed after "" & RC[-15] & " & _
+                        "IF(NOT(ISERROR(SEARCH(""X"", RC[-8]))), " & _
+                            """ rate change charted @ "", " & _
+                            """ final infusion record charted @ """ & _
+                        ") & " & _
+                        "TEXT(RC[-21],""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Patient discharged @ "" & " & _
+                        "TEXT(RC[-23], ""mm/dd/yy hh:mm:ss"") & CHAR(10) & "" ||"" & RC[-13] & ""||""" & _
+                    "), " & _
+                    """"" " & _
+                "))" & _
+            ")" 
         newColumn.Name = "IRF5"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1002,9 +1154,24 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
                         
         Set newColumn = finalTable.ListColumns.Add(Position:=27)
         
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF( OR( LEN(RC[-11]) < 1, AND(EXACT(RC[-25],R[1]C[-25]),EXACT(RC[-22],R[1]C[-22]),NOT(ISERROR(SEARCH(""D"",R[1]C[-10]))))), """", IF( ((RC[-22] - VLOOKUP(RC[-7],scores,6,FALSE)) * 1440) >45, CONCATENATE( VLOOKUP(RC[-7],scores,7,FALSE) & "" charted @ "" &   TEXT(VLOOKUP(RC[-7],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") &  "" was not charted within 45 min (30-policy + 15" & _
-        "-grace period) BEFORE the "" & RC[-16] & "" "" & RC[-21] &  "" charted @ "" & TEXT(RC[-22], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-14] & ""||""), """"))"
-        
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(OR(" & _
+                "LEN(RC[-11]) < 1, " & _
+                "AND(" & _
+                    "EXACT(RC[-25],R[1]C[-25])," & _
+                    "EXACT(RC[-22],R[1]C[-22])," & _
+                    "NOT(ISERROR(SEARCH(""D"",R[1]C[-10])))" & _
+                ")" & _
+            "), """", " & _
+            "IF( ( (RC[-22] - VLOOKUP(RC[-7],scores,6,FALSE)) * 1440) > 45, " & _
+                "CONCATENATE(" & _
+                    "VLOOKUP(RC[-7],scores,7,FALSE) & "" charted @ "" & " & _
+                    "TEXT(VLOOKUP(RC[-7],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "" was not charted within 45 min (30-policy + 15-grace period) BEFORE the "" & " & _
+                    "RC[-16] & "" "" & RC[-21] & "" charted @ "" & " & _
+                    "TEXT(RC[-22], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-14] & ""||""" & _
+                "), " & _
+                """"" " & _
+            "))"        
         newColumn.Name = "PRF1"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1012,8 +1179,23 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
             
         Set newColumn = finalTable.ListColumns.Add(Position:=28)
         
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(  OR( LEN(RC[-12]) < 1, LEN(RC[-8]) > 1 ), """", IF( AND( NOT(ISERROR(SEARCH(""A"",RC[-12]))), LEN(RC[-8]) < 1 ), CONCATENATE( ""No pain-score observed prior to the "" & RC[-17] & "" "" & RC[-22] & "" charted @ "" & TEXT(RC[-23], ""mm/dd/yy hh:mm:ss"")& "" ||"" & RC[-15] & ""||""),""""))"
-        
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(OR(" & _
+                "LEN(RC[-12]) < 1, " & _
+                "LEN(RC[-8]) > 1 " & _
+            "), """", " & _
+            "IF(AND(" & _
+                "NOT(ISERROR(SEARCH(""A"",RC[-12]))), " & _
+                "LEN(RC[-8]) < 1 " & _
+            "), " & _
+                "CONCATENATE(" & _
+                    """No pain-score observed prior to the "" & " & _
+                    "RC[-17] & "" "" & RC[-22] & "" charted @ "" & " & _
+                    "TEXT(RC[-23], ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-15] & ""||""" & _
+                "), " & _
+                """"" " & _
+            "))"
+
         newColumn.Name = "PRF2"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1022,11 +1204,25 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=29)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-13]) < 1, LEN(RC[-9]) < 1, VLOOKUP(RC[-9],scores,21,FALSE)<>""PARTIAL"" ),"""", CONCATENATE( ""The previous pain assessment observed before "" & RC[-18] & "" "" & RC[-23] & "" charted @ "" & TEXT(RC[-24],""mm/dd/yy hh:mm:ss"") & "" was incomplete."") & CHAR(10) & "" ||"" & RC[-16] & ""||"" & CHAR(10) & IF(  ISERROR(SEARCH(CodeKey!R2C5,VLOOK" & _
-        "UP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R2C3 & "" ' is missing"" & CHAR(10), """") & IF( ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R3C3 & "" ' is missing"" & CHAR(10), """") & IF( ISERROR(SEARCH(CodeKey!R4C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R4C3 & "" ' is missing"" & CHAR(10), """") & IF( ISERROR(SEARCH(Co" & _
-        "deKey!R5C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R5C3 & "" ' is missing"" & CHAR(10), """") & IF( ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R6C3 & "" ' is missing"" & CHAR(10), """") & IF( ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R7C3 & "" ' is missing"" & CHAR(10),  """") & IF( " & _
-        "ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R8C3 & "" ' is missing"" & CHAR(10), """") ),"""")"
-        
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-13]) < 1, " & _
+                    "LEN(RC[-9]) < 1, " & _
+                    "VLOOKUP(RC[-9],scores,21,FALSE)<>""PARTIAL"" " & _
+                "), """"," & _
+                "CONCATENATE(" & _
+                    """The previous pain assessment observed before "" & RC[-18] & "" "" & RC[-23] & "" charted @ "" & " & _
+                    "TEXT(RC[-24],""mm/dd/yy hh:mm:ss"") & "" was incomplete."") & CHAR(10) & "" ||"" & RC[-16] & ""||"" & CHAR(10), " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R2C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R2C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R3C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R4C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R4C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R5C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R5C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R6C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R7C3 & "" ' is missing"" & CHAR(10), """") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-9],scores,18,FALSE))), ""'"" & CodeKey!R8C3 & "" ' is missing"" & CHAR(10), """")" & _
+                "), " & _
+                """"" " & _
+            ")"        
         newColumn.Name = "PRF3"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1035,10 +1231,28 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=30)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-14]) < 1, ISERROR(SEARCH(""A"",RC[-14])) ), """", IF( ((VLOOKUP(CONCATENATE(RC[-28]&""-D""& SUM( RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1)),scores,6,FALSE) - RC[-25]) * 1440) > 45, CONCATENATE( ""The follow-up pain assessment charted after ""& RC[-19]& "" ""& RC[-24]& "" charted @ "" & TEXT(RC[-25],""mm/dd/yy hh:mm:ss"") & "" " & _
-        "was "" & ROUND((((VLOOKUP(CONCATENATE(RC[-28]&""-D""& SUM( RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1)),scores,6,FALSE) - RC[-25]) * 1440) - 45),0) & "" minutes late."" & CHAR(10) & ""The "" & VLOOKUP(CONCATENATE(RC[-28]&""-D""& SUM( RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1)),scores,7,FALSE) & "" was due within 45min (30-policy + 15-grace p" & _
-        "eriod) but was not charted until "" & TEXT(VLOOKUP(CONCATENATE(RC[-28]&""-D""& SUM( RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-17] & ""||"" ),"""")),"""")"
-                
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-14]) < 1, " & _
+                    "ISERROR(SEARCH(""A"",RC[-14])) " & _
+                "), """", " & _
+                "IF(((VLOOKUP(" & _
+                    "CONCATENATE(RC[-28]&""-D""& SUM(RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1))," & _
+                    "scores,6,FALSE) - RC[-25]) * 1440) > 45, " & _
+                "CONCATENATE(" & _
+                    """The follow-up pain assessment charted after "" & RC[-19] & "" "" & RC[-24] & "" charted @ "" & " & _
+                    "TEXT(RC[-25],""mm/dd/yy hh:mm:ss"") & "" was "" & " & _
+                    "ROUND((((VLOOKUP(" & _
+                        "CONCATENATE(RC[-28]&""-D""& SUM(RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1))," & _
+                        "scores,6,FALSE) - RC[-25]) * 1440) - 45),0) & "" minutes late."" & CHAR(10) & ""The "" & " & _
+                    "VLOOKUP(" & _
+                        "CONCATENATE(RC[-28]&""-D""& SUM(RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1))," & _
+                        "scores,7,FALSE) & "" was due within 45min (30-policy + 15-grace period) but was not charted until "" & " & _
+                    "TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-28]&""-D""& SUM(RIGHT(RC[-10], LEN(RC[-10]) - SEARCH(""D"",RC[-10]))+1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-17] & ""||""" & _
+                "), """")" & _
+            "))"                
         newColumn.Name = "PRF4"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1047,10 +1261,28 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=31)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-15]) < 1,ISERROR(SEARCH(""B"",RC[-15])) ), """", IF(((VLOOKUP(CONCATENATE(RC[-29]&""-D""& SUM( RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1)),scores,6,FALSE) - RC[-26]) * 1440) > 75, CONCATENATE( ""The follow-up pain assessment charted after "" & RC[-20] & "" "" & RC[-25] & "" charted @ "" & TEXT(RC[-26],""mm/dd/yy hh:mm:ss"") & " & _
-        """ was "" & ROUND((((VLOOKUP(CONCATENATE(RC[-29]&""-D""& SUM( RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1)),scores,6,FALSE) - RC[-26]) * 1440) - 75),0) & "" minutes late."" & CHAR(10) & ""The "" & VLOOKUP(CONCATENATE(RC[-29]&""-D""& SUM( RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1)),scores,7,FALSE) & "" was due within 75min (60-policy + 15-grac" & _
-        "e period) but was not charted until "" & TEXT(VLOOKUP(CONCATENATE(RC[-29]&""-D""& SUM( RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-18] & ""||"" ),"""")),"""")"
-                
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-15]) < 1, " & _
+                    "ISERROR(SEARCH(""B"",RC[-15])) " & _
+                "), """", " & _
+                "IF(((VLOOKUP(" & _
+                    "CONCATENATE(RC[-29]&""-D""& SUM(RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1))," & _
+                    "scores,6,FALSE) - RC[-26]) * 1440) > 75, " & _
+                "CONCATENATE(" & _
+                    """The follow-up pain assessment charted after "" & RC[-20] & "" "" & RC[-25] & "" charted @ "" & " & _
+                    "TEXT(RC[-26],""mm/dd/yy hh:mm:ss"") & "" was "" & " & _
+                    "ROUND((((VLOOKUP(" & _
+                        "CONCATENATE(RC[-29]&""-D""& SUM(RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1))," & _
+                        "scores,6,FALSE) - RC[-26]) * 1440) - 75),0) & "" minutes late."" & CHAR(10) & ""The "" & " & _
+                    "VLOOKUP(" & _
+                        "CONCATENATE(RC[-29]&""-D""& SUM(RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1))," & _
+                        "scores,7,FALSE) & "" was due within 75min (60-policy + 15-grace period) but was not charted until "" & " & _
+                    "TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-29]&""-D""& SUM(RIGHT(RC[-11], LEN(RC[-11]) - SEARCH(""D"",RC[-11]))+1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" ||"" & RC[-18] & ""||""" & _
+                "), """")" & _
+            "))"                
         newColumn.Name = "PRF5"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1059,9 +1291,20 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=32)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( LEN(RC[-16]) < 1, """", IF(ISERROR(VLOOKUP(CONCATENATE(RC[-30]&""-D""& SUM( RIGHT(RC[-12], LEN(RC[-12]) - SEARCH(""D"",RC[-12]))+1)),scores,6,FALSE)), CONCATENATE( ""No follow-up pain assessment observed after "" & RC[-21] & "" "" & RC[-26] & "" charted @ "" & TEXT(RC[-27],""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Patient discharged @ "" & TEXT(RC[-29], """ & _
-        "mm/dd/yy hh:mm:ss"") & CHAR(10) & "" ||"" & RC[-19] & ""||"" ),"""")),"""")"
-                
+            "=IFERROR(" & _
+                "IF(LEN(RC[-16]) < 1, """", " & _
+                "IF(ISERROR(VLOOKUP(" & _
+                    "CONCATENATE(RC[-30]&""-D""& SUM(RIGHT(RC[-12], LEN(RC[-12]) - SEARCH(""D"",RC[-12]))+1))," & _
+                    "scores,6,FALSE)" & _
+                "), " & _
+                    "CONCATENATE(" & _
+                        """No follow-up pain assessment observed after "" & RC[-21] & "" "" & RC[-26] & "" charted @ "" & " & _
+                        "TEXT(RC[-27],""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Patient discharged @ "" & " & _
+                        "TEXT(RC[-29], ""mm/dd/yy hh:mm:ss"") & CHAR(10) & "" ||"" & RC[-19] & ""||""" & _
+                    "), " & _
+                    """"" " & _
+                "))" & _
+            ")"                
         newColumn.Name = "PRF6"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1070,11 +1313,37 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=33)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR( IF( OR( LEN(RC[-17]) < 1, RIGHT(RC[-13],2) = ""D1"", NOT( RC[-28] < VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM( RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1)),scores,6,FALSE)), VALUE(VLOOKUP(RC[-13], scores,10,FALSE)) = 0 ), """",IF( (VLOOKUP(RC[-13], scores,10,FALSE) - VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM( RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""" & _
-        "D"",RC[-13]))+1)),scores,10,FALSE)) < 1, CONCATENATE( ""The "" & VLOOKUP(RC[-13], scores,7,FALSE) & "" charted at "" & TEXT(VLOOKUP(RC[-13], scores, 6, FALSE), ""mm/dd/yy hh:mm:ss"") & "" = "" & VLOOKUP(RC[-13], scores, 10, FALSE) & CHAR(10) & ""The "" & VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM( RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1)),scores,7,FALSE)" & _
-        " & "" charted at "" & TEXT(VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM( RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" = "" & VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM( RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1)),scores,10,FALSE) & CHAR(10) & ""The "" & RC[-22] & "" "" & RC[-27] & "" given at "" & TEXT(RC" & _
-        "[-28], ""mm/dd/yy hh:mm:ss"") & "" was ineffective."" ),"""")),"""")"
-                
+            "=IFERROR(" & _
+                "IF(OR(" & _
+                    "LEN(RC[-17]) < 1, " & _
+                    "RIGHT(RC[-13],2) = ""D1"", " & _
+                    "NOT(RC[-28] < VLOOKUP(" & _
+                        "CONCATENATE(RC[-31]&""-D""& SUM(RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1))," & _
+                        "scores,6,FALSE)" & _
+                    "), " & _
+                    "VALUE(VLOOKUP(RC[-13], scores,10,FALSE)) = 0 " & _
+                "), """"," & _
+                "IF((VLOOKUP(RC[-13], scores,10,FALSE) - VLOOKUP(" & _
+                    "CONCATENATE(RC[-31]&""-D""& SUM(RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1))," & _
+                    "scores,10,FALSE)" & _
+                ") < 1, " & _
+                "CONCATENATE(" & _
+                    """The "" & VLOOKUP(RC[-13], scores,7,FALSE) & "" charted at "" & " & _
+                    "TEXT(VLOOKUP(RC[-13], scores, 6, FALSE), ""mm/dd/yy hh:mm:ss"") & "" = "" & VLOOKUP(RC[-13], scores, 10, FALSE) & CHAR(10) & " & _
+                    """The "" & VLOOKUP(" & _
+                        "CONCATENATE(RC[-31]&""-D""& SUM(RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1))," & _
+                        "scores,7,FALSE)" & _
+                    " & "" charted at "" & " & _
+                    "TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-31]&""-D""& SUM(RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & "" = "" & " & _
+                    "VLOOKUP(" & _
+                        "CONCATENATE(RC[-31]&""-D""& SUM(RIGHT(RC[-13], LEN(RC[-13]) - SEARCH(""D"",RC[-13]))+1))," & _
+                        "scores,10,FALSE)" & _
+                    " & CHAR(10) & ""The "" & RC[-22] & "" "" & RC[-27] & "" given at "" & " & _
+                    "TEXT(RC[-28], ""mm/dd/yy hh:mm:ss"") & "" was ineffective.""" & _
+                "), """")" & _
+            ")"                
         newColumn.Name = "PRF7"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1083,11 +1352,31 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=34)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR(IF( AND( NOT(ISERROR(VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE))), LEN(RC[-13]) > 1, ((RC[-29] - VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE)) * 1440) < 1440, ((RC[-29] - VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE)) * 1440) > 135, RC[-29] < VLOOKUP(CONCATENATE( RC[-32]&""-Y""),inf,6,FALSE), LEN(RC[-17])>1, ( RC[-29] - VLOOKUP(CONCATENAT" & _
-        "E( RC[-32] & ""-D"" & SUM( RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1)),scores,6,FALSE))*1440 >135  ), CONCATENATE( ROUND(( RC[-29] - VLOOKUP(CONCATENATE( RC[-32] & ""-D"" & SUM( RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1)),scores,6,FALSE))*1440,0) & "" minutes elapsed between pain scores while patient has active "" & VLOOKUP( CONCATENATE( RC[-32" & _
-        "] & ""-W""),inf, 12, FALSE) & "" within first 24 hours."" & CHAR(10) & ""First infusion record charted @ "" & TEXT(VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Previous score charted @ "" & TEXT( VLOOKUP(CONCATENATE( RC[-32] & ""-D"" & SUM( RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1)),scores,6,FALSE), ""mm/dd/yy" & _
-        " hh:mm:ss"") & CHAR(10) & ""Flagged score charted @ "" & TEXT( RC[-29], ""mm/dd/yy hh:mm:ss"") & "")"" & CHAR(10) & "" ||"" & RC[-21] & ""||""),""""),"""")"
-                
+            "=IFERROR(" & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE))), " & _
+                    "LEN(RC[-13]) > 1, " & _
+                    "((RC[-29] - VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE)) * 1440) < 1440, " & _
+                    "((RC[-29] - VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE)) * 1440) > 135, " & _
+                    "RC[-29] < VLOOKUP(CONCATENATE(RC[-32]&""-Y""),inf,6,FALSE), " & _
+                    "LEN(RC[-17])>1, " & _
+                    "(RC[-29] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-32] & ""-D"" & SUM(RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1))," & _
+                        "scores,6,FALSE))*1440 >135" & _
+                "), " & _
+                "CONCATENATE(" & _
+                    "ROUND((RC[-29] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-32] & ""-D"" & SUM(RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1))," & _
+                        "scores,6,FALSE))*1440,0) & "" minutes elapsed between pain scores while patient has active "" & " & _
+                    "VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf, 12, FALSE) & "" within first 24 hours."" & CHAR(10) & " & _
+                    """First infusion record charted @ "" & TEXT(VLOOKUP(CONCATENATE(RC[-32] & ""-W""),inf,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & " & _
+                    """Previous score charted @ "" & TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-32] & ""-D"" & SUM(RIGHT(RC[-14], LEN(RC[-14])-SEARCH(""D"",RC[-14]))-1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & " & _
+                    """Flagged score charted @ "" & TEXT(RC[-29], ""mm/dd/yy hh:mm:ss"") & "")"" & CHAR(10) & "" ||"" & RC[-21] & ""||""" & _
+                "), " & _
+                """"" " & _
+            "))"                
         newColumn.Name = "SRF1"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1096,11 +1385,30 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=35)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR(IF( AND( NOT(ISERROR(VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE))), LEN(RC[-14]) > 1, ((RC[-30] - VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE)) * 1440) > 1440, RC[-30] < VLOOKUP(CONCATENATE( RC[-33]&""-Y""),inf,6,FALSE), LEN(RC[-18])>1, ( RC[-30] - VLOOKUP(CONCATENATE( RC[-33] & ""-D"" & SUM( RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1" & _
-        ")),scores,6,FALSE))*1440 >255 ), CONCATENATE( ROUND(( RC[-30] - VLOOKUP(CONCATENATE( RC[-33] & ""-D"" & SUM( RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1)),scores,6,FALSE))*1440,0) & "" minutes elapsed between pain scores while patient has active "" & VLOOKUP( CONCATENATE( RC[-33] & ""-W""),inf, 12, FALSE) & "" after the first 24 hours."" & CHAR(10) & ""Firs" & _
-        "t infusion record charted @ "" & TEXT(VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Previous score charted @ "" & TEXT( VLOOKUP(CONCATENATE( RC[-33] & ""-D"" & SUM( RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Flagged score charted @ ""& TEXT( RC[-30], ""mm/d" & _
-        "d/yy hh:mm:ss"") & "")"" & CHAR(10) & "" ||"" & RC[-22] & ""||""),""""),"""")"
-                
+            "=IFERROR(" & _
+                "IF(AND(" & _
+                    "NOT(ISERROR(VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE))), " & _
+                    "LEN(RC[-14]) > 1, " & _
+                    "((RC[-30] - VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE)) * 1440) > 1440, " & _
+                    "RC[-30] < VLOOKUP(CONCATENATE( RC[-33]&""-Y""),inf,6,FALSE), " & _
+                    "LEN(RC[-18])>1, " & _
+                    "(RC[-30] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-33] & ""-D"" & SUM(RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1))," & _
+                        "scores,6,FALSE))*1440 >255" & _
+                "), " & _
+                "CONCATENATE(" & _
+                    "ROUND((RC[-30] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-33] & ""-D"" & SUM(RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1))," & _
+                        "scores,6,FALSE))*1440,0) & "" minutes elapsed between pain scores while patient has active "" & " & _
+                    "VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf, 12, FALSE) & "" after the first 24 hours."" & CHAR(10) & " & _
+                    """First infusion record charted @ "" & TEXT(VLOOKUP(CONCATENATE(RC[-33] & ""-W""),inf,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & " & _
+                    """Previous score charted @ "" & TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-33] & ""-D"" & SUM(RIGHT(RC[-15], LEN(RC[-15])-SEARCH(""D"",RC[-15]))-1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & " & _
+                    """Flagged score charted @ "" & TEXT(RC[-30], ""mm/dd/yy hh:mm:ss"") & "")"" & CHAR(10) & "" ||"" & RC[-22] & ""||""" & _
+                "), " & _
+                """"" " & _
+            "))"                
         newColumn.Name = "SRF2"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1109,10 +1417,25 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=36)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=IFERROR(IF( AND( RIGHT(RC[-16],2)<>""D1"", (RC[-31] - VLOOKUP(CONCATENATE(RC[-34]&""-D""& SUM( RIGHT(RC[-16], LEN(RC[-16]) - SEARCH(""D"",RC[-16]))-1)),scores,6,FALSE)) * 1440 > 735,  LEN(RC[-19])>1 ), CONCATENATE( ROUND(( RC[-31] - VLOOKUP(CONCATENATE( RC[-34] & ""-D"" & SUM( RIGHT(RC[-16], LEN(RC[-16])-SEARCH(""D"",RC[-16]))-1)),scores,6,FALSE))*1440,0) & "" minu" & _
-        "tes elapsed between pain scores, exceeding the 12-hr per-shift limit "" & CHAR(10) & ""Previous score charted @ "" & TEXT( VLOOKUP(CONCATENATE( RC[-34] & ""-D"" & SUM( RIGHT(RC[-16], LEN(RC[-16])-SEARCH(""D"",RC[-16]))-1)),scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & ""Flagged score charted @ "" & TEXT( RC[-31], ""mm/dd/yy hh:mm:ss"") & "")"" & CHAR(10) & """ & _
-        " ||"" & RC[-23] & ""||""),""""),"""")"
-                
+            "=IFERROR(" & _
+                "IF(AND(" & _
+                    "RIGHT(RC[-16],2)<>""D1"", " & _
+                    "((RC[-31] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-34]&""-D""& SUM(RIGHT(RC[-16], LEN(RC[-16]) - SEARCH(""D"",RC[-16]))-1))," & _
+                        "scores,6,FALSE)) * 1440) > 735, " & _
+                    "LEN(RC[-19])>1 " & _
+                "), " & _
+                "CONCATENATE(" & _
+                    "ROUND((RC[-31] - VLOOKUP(" & _
+                        "CONCATENATE(RC[-34] & ""-D"" & SUM(RIGHT(RC[-16], LEN(RC[-16])-SEARCH(""D"",RC[-16]))-1))," & _
+                        "scores,6,FALSE))*1440,0) & "" minutes elapsed between pain scores, exceeding the 12-hr per-shift limit "" & CHAR(10) & " & _
+                    """Previous score charted @ "" & TEXT(" & _
+                        "VLOOKUP(CONCATENATE(RC[-34] & ""-D"" & SUM(RIGHT(RC[-16], LEN(RC[-16])-SEARCH(""D"",RC[-16]))-1))," & _
+                        "scores,6,FALSE), ""mm/dd/yy hh:mm:ss"") & CHAR(10) & " & _
+                    """Flagged score charted @ "" & TEXT(RC[-31], ""mm/dd/yy hh:mm:ss"") & "")"" & CHAR(10) & "" ||"" & RC[-23] & ""||""" & _
+                "), " & _
+                """"" " & _
+            ")"                
         newColumn.Name = "SRF3"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1121,8 +1444,14 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=37)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=CONCATENATE( IF( LEN(RC[-14])>1, CONCATENATE(RC[-14] & CHAR(10)),"""") & IF( LEN(RC[-13])>1, CONCATENATE(RC[-13] & CHAR(10)),"""") & IF( LEN(RC[-11])>1, CONCATENATE(RC[-11] & CHAR(10)),"""") & IF( LEN(RC[-9])>1, CONCATENATE(RC[-9] & CHAR(10)),"""") & IF(        LEN(RC[-8])>1, CONCATENATE(RC[-8] & CHAR(10)),"""") & IF( LEN(RC[-5])>1, CONCATENATE(RC[-5] & CHAR(10)),""""))"
-                
+            "=CONCATENATE(" & _
+                "IF(LEN(RC[-14])>1, CONCATENATE(RC[-14] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-13])>1, CONCATENATE(RC[-13] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-11])>1, CONCATENATE(RC[-11] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-9])>1, CONCATENATE(RC[-9] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-8])>1, CONCATENATE(RC[-8] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-5])>1, CONCATENATE(RC[-5] & CHAR(10)),"""")" & _
+            ")"                
         newColumn.Name = "COMP"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1131,9 +1460,16 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         Set newColumn = finalTable.ListColumns.Add(Position:=38)
         
         newColumn.DataBodyRange.FormulaR1C1 = _
-        "=CONCATENATE( IF(LEN(RC[-16])>1, CONCATENATE(RC[-16] & CHAR(10)),"""") & IF( LEN(RC[-13])>1, CONCATENATE(RC[-13] & CHAR(10)),"""") & IF( LEN(RC[-11])>1, CONCATENATE(RC[-11] & CHAR(10)),"""") & IF( LEN(RC[-8])>1, CONCATENATE(RC[-8] & CHAR(10)),"""") & IF(        LEN(RC[-7])>1, CONCATENATE(RC[-7] & CHAR(10)),"""") & IF( LEN(RC[-4])>1, CONCATENATE(RC[-4] & CHAR(10)),""" & _
-        """) & IF( LEN(RC[-3])>1, CONCATENATE(RC[-3] & CHAR(10)),"""") & IF( LEN(RC[-2])>1, CONCATENATE(RC[-2] & CHAR(10)),"""") )"
-                
+            "=CONCATENATE(" & _
+                "IF(LEN(RC[-16])>1, CONCATENATE(RC[-16] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-13])>1, CONCATENATE(RC[-13] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-11])>1, CONCATENATE(RC[-11] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-8])>1, CONCATENATE(RC[-8] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-7])>1, CONCATENATE(RC[-7] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-4])>1, CONCATENATE(RC[-4] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-3])>1, CONCATENATE(RC[-3] & CHAR(10)),"""") & " & _
+                "IF(LEN(RC[-2])>1, CONCATENATE(RC[-2] & CHAR(10)),"""")" & _
+            ")"                
         newColumn.Name = "TIMING"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
@@ -1150,8 +1486,13 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
           
         Set newColumn = finalTable.ListColumns.Add(Position:=40)
         
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(OR(LEN(RC[-3])>1,LEN(RC[-2])>1, LEN(RC[-1])>1),1,"""")"
-                
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(OR(" & _
+                "LEN(RC[-3])>1," & _
+                "LEN(RC[-2])>1, " & _
+                "LEN(RC[-1])>1" & _
+            "), 1, """")"
+               
         newColumn.Name = "ANY"
         Application.Calculate
         Set rng = newColumn.DataBodyRange
