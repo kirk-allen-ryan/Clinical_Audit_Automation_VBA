@@ -13,12 +13,20 @@ For years, the Inpatient Pain Audit was a painfully manual exercise that consume
 * **High Labor Cost & Tension:** RNs were forced into a tedious "stare-and-compare" exercise on sampled charts. This process created tension when high-performing staff received low "grades" simply due to **bad luck** in the small, non-representative sampling.
 * **No Denominator:** The sampling method provided no denominator information considered whatsoever, meaning the only information generated was a sampling-rate which is ultimately luck of the draw.
 * **Data Gaps:** The raw data lives in multiple tables that are not completely mapped to Business Objects, so valuable field data is out of bounds.
+* How do we evolve from this?
+
+  <img width="700" height="600" alt="image" src="https://github.com/user-attachments/assets/0cd8986b-bbd2-412b-a7ca-3be88c8a8e9a" />
 
 ---
 
 ### **The Solution: Intelligent Automation for Maximum ROI**
 
-The `Audit.Bot_IP` script was engineered to solve a **"thorny problem"** of complex, conditional logic by automating hundreds of processing steps and transforms, delivering several key organizational wins:
+<img width="1466" height="515" alt="image" src="https://github.com/user-attachments/assets/18ef0258-fa1a-4fcf-b6aa-c1e7bebee23a" />
+
+---
+
+
+The `Audit.Bot_IP` workflow and synchronized file-cluster was engineered to solve a **"thorny problem"** of complex, conditional logic by automating hundreds of processing steps and transforms, delivering several key organizational wins:
 
 #### 1. Zero New Software Spend, Maximum ROI
 The entire solution leverages **existing Microsoft Office licenses** (Excel VBA and Outlook), proving that **ubiquitous tools** can be up-purposed to solve complex business problems with **zero new software expenditure**.
@@ -43,6 +51,12 @@ The solution was designed to be **clone-to-own** by any analyst at any site:
 The **[Audit\_Logic.vba](https://github.com/kirk-allen-ryan/Clinical_Audit_Automation_VBA/blob/main/Audit_Logic.vba)** script demonstrates expertise in advanced Excel manipulation and algorithmic problem-solving:
 
 * **Algorithmic Scale & Conditional Logic:** The script automates a manual process that involves hundreds of processing steps and transforms. This is powered by approximately **60 unique, multi-level formulas** (including IRF, PRF, and SRF flags) which collectively evaluate over **440,000 gross conditional logic arguments** per audit run. This volume of conditional calculation (IF/AND/OR/VLOOKUP sequencing) is necessary to ensure every event is correctly classified and flagged against 18 separate clinical policy rules.
+  
+---
+<img width="951" height="540" alt="image" src="https://github.com/user-attachments/assets/52fe199a-affc-4c41-9e61-e407e0e6510f" />
+
+---
+
 * **Dynamic Sequencing Logic:** Implements thousands of arguments in logical formulas to sequence events, where a single record can simultaneously serve as a *Pre-PRN assessment* for one event and a *Follow-up assessment* for the previous Medication event.
 * **Complex Conditional Rules:** The quantitative value of the pain score itself controls the prerequisites for assessment completeness (Partial vs. Complete).
 * **Process Automation:** Automates the voluminous calculations, flag application, and distribution of flagged records back to a trusted user for manual review and final disposition.
