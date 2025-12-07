@@ -40,7 +40,7 @@ The solution was designed to be **clone-to-own** by any analyst at any site:
 
 ### **Core Technical Achievements**
 
-The **Audit\_Logic.vba** script demonstrates expertise in advanced Excel manipulation and algorithmic problem-solving:
+The **[Audit\_Logic.vba](https://github.com/kirk-allen-ryan/Clinical_Audit_Automation_VBA/blob/main/Audit_Logic.vba)** script demonstrates expertise in advanced Excel manipulation and algorithmic problem-solving:
 
 * **Algorithmic Scale & Conditional Logic:** The script automates a manual process that involves hundreds of processing steps and transforms. This is powered by approximately **60 unique, multi-level formulas** (including IRF, PRF, and SRF flags) which collectively evaluate over **440,000 gross conditional logic arguments** per audit run. This volume of conditional calculation (IF/AND/OR/VLOOKUP sequencing) is necessary to ensure every event is correctly classified and flagged against 18 separate clinical policy rules.
 * **Dynamic Sequencing Logic:** Implements thousands of arguments in logical formulas to sequence events, where a single record can simultaneously serve as a *Pre-PRN assessment* for one event and a *Follow-up assessment* for the previous Medication event.
