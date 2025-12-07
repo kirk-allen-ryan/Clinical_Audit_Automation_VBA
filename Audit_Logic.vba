@@ -472,8 +472,13 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
         tbl.Sort.SortFields.Add Key:=tbl.ListColumns(9).Range, SortOn:=xlSortOnValues, Order:=xlDescending
         tbl.Sort.Apply
         Set newColumn = tbl.ListColumns("ENDTIME")
-        newColumn.DataBodyRange.FormulaR1C1 = "=IF(OR(NOT(ISERROR(SEARCH(""Begin"",RC[-6]))),NOT(ISERROR(SEARCH(""mL/hr"",RC[-6])))),RC[-10],IF(EXACT(RC[-14],R[1]C[-14]),R[1]C[-10],VLOOKUP(RC[-13],inf_end,4,FALSE)))"
-     
+
+        newColumn.DataBodyRange.FormulaR1C1 = _
+            "=IF(OR(NOT(ISERROR(SEARCH(""Begin"",RC[-6])))," & _
+                "NOT(ISERROR(SEARCH(""mL/hr"",RC[-6])))),RC[-10]," & _
+            "IF(EXACT(RC[-14],R[1]C[-14]),R[1]C[-10]," & _
+            "VLOOKUP(RC[-13],inf_end,4,FALSE)))"   
+
         Set calc = Workbooks.Open(calcPath)
         
         Set sourceSheet = par.Sheets("PRN")
@@ -1068,13 +1073,13 @@ Dim lastWs, logz, PRN, ws, ws2, siFoc, sourceSheet, targetSheet, finalSheet, acc
                     """The previous pain assessment ("" & " & _
                     "TEXT(VLOOKUP(RC[-4],scores,6,FALSE),""mm/dd/yy hh:mm:ss"") & "") observed before "" & RC[-13] & "" rate/status change charted @ "" & " & _
                     "TEXT(RC[-19],""mm/dd/yy hh:mm:ss"") & "" was incomplete."") & CHAR(10) & "" ||"" & RC[-11] & ""||"" & CHAR(10), " & _
-                    "IF(ISERROR(SEARCH(CodeKey!R2C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R2C3&"" ' is missing"" & CHAR(10),"""") & " & _
-                    "IF(ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R3C3 &"" ' is missing"" & CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R2C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R2C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R3C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R3C3&"" ' is missing""&CHAR(10),"""") & " & _
                     "IF(ISERROR(SEARCH(CodeKey!R4C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R4C3&"" ' is missing""&CHAR(10),"""") & " & _
                     "IF(ISERROR(SEARCH(CodeKey!R5C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R5C3&"" ' is missing""&CHAR(10),"""") & " & _
-                    "IF(ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R6C3&"" ' is missing""&CHAR(10),"""") & " & _
-                    "IF(ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R7C3&"" ' is missing""&CHAR(10),"""") & " & _
-                    "IF(ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-4],scores,18,FALSE))), ""'""&CodeKey!R8C3&"" ' is missing""&CHAR(10),"""")" & _
+                    "IF(ISERROR(SEARCH(CodeKey!R6C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R6C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R7C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R7C3&"" ' is missing""&CHAR(10),"""") & " & _
+                    "IF(ISERROR(SEARCH(CodeKey!R8C5,VLOOKUP(RC[-4],scores,18,FALSE))),""'""&CodeKey!R8C3&"" ' is missing""&CHAR(10),"""")" & _
                 "), " & _
                 """"" " & _
             ")"
