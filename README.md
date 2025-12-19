@@ -73,7 +73,7 @@ The **[Audit\_Logic.vba](https://github.com/kirk-allen-ryan/Clinical_Audit_Autom
 ---
 
 
-...into context-rich, plain-English clinical flagging to help stakeholders deliver continuous improvement.
+...into context-rich, **[plain-English clinical flagging](https://github.com/kirk-allen-ryan/Clinical_Audit_Automation_VBA/blob/main/Sample_Audit_Review_File_UNLOCKED.xlsm)** to help stakeholders deliver continuous improvement.
 
 ---
 
