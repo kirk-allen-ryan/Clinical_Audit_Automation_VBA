@@ -79,5 +79,12 @@ The **[Audit\_Logic.vba](https://github.com/kirk-allen-ryan/Clinical_Audit_Autom
 
 <img width="450" height="225" alt="image" src="https://github.com/user-attachments/assets/5e9f52fd-199a-47b1-9435-df1532b3f48d" />
 
+---
+
+<img width="476" height="173" alt="image" src="https://github.com/user-attachments/assets/b7866205-9564-4621-8ed8-45e2d4a4df8c" />
+
+
+
+**[Watch quick demo on YouTube](https://youtu.be/sbzO43XegmI)** 
 
 
